@@ -1,4 +1,7 @@
 // TODO: accept units (currently defaulting to inches)
-export function dots(l, printer = defaultPrinter) {
-    return Math.round(l * printer.resolutionDPI);
-}
+var utils = {
+    dots: function(l, printer = defaultPrinter) {
+        return Math.round(l * printer.resolutionDPI);
+    }
+};
+module.exports = utils;

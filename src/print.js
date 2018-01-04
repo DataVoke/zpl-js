@@ -23,13 +23,15 @@ program
     .option('-c, --check', 'dry-run; do not send label to printer')
     .parse(process.argv);
 
+program.verbose = "debug";
+
 console.log('loglevel: '+program.verbose);
 log.setLevel(program.verbose);
 
 var defaultPrinterModel = PRINTERS.ZEBRA_GX430T;
 var defaultPrinter = Object.assign({
     name: 'Default Printer',
-    address: '192.168.1.14'
+    address: '10.10.11.23'
 }, defaultPrinterModel, program.json && program.json.printer);
 var defaultMedia = {
     width: 2 * 25.4,
@@ -58,17 +60,19 @@ var labels = {
     }
 };
 
-if (program.test) {
-    log.info('Printing a test label...');
-    print();
-} else if (program.json) {
-    log.trace('Using provided JSON printing parameters');
-    log.trace(`Provided parameters: ${JSON.stringify(program.json)}`);
+print();
 
-    print(JSON.parse(program.json));
-} else {
-    log.error('No label content provided');
-}
+// if (program.test) {
+//     log.info('Printing a test label...');
+//     print();
+// } else if (program.json) {
+//     log.trace('Using provided JSON printing parameters');
+//     log.trace(`Provided parameters: ${JSON.stringify(program.json)}`);
+//
+//     print(JSON.parse(program.json));
+// } else {
+//     log.error('No label content provided');
+// }
 
 
 function print({printer = defaultPrinter, template = labels.test.template, content = labels.test.defaultContent, media = defaultMedia} = {}) {
