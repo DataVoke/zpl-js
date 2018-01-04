@@ -2,7 +2,7 @@ module.exports = [
     {
         command: '^A',
         alias: 'setFont',
-        parameters: ['font','height','width'],
+        parameters: ['font','orientation', 'height','width'],
         description: 'Set font for current field',
         fn: (fontName, fieldOrientation, characterHeight, width) => `^A${fontName}${fieldOrientation},${characterHeight},${width}`
         // f /[A-Z0-9]/
@@ -12,8 +12,10 @@ module.exports = [
     },
     {
         command: '^A@',
-        parameters: ['orientation, height, width, path'],
-        description: 'Use font name to call font'
+        alias: 'setFontByName',
+        parameters: ['orientation, height, width, fontName, extension'],
+        description: 'Use font name to call font',
+        fn: (fieldOrientation, characterHeight, width, fontName, extension) => `^A${fieldOrientation},${characterHeight},${width},R:${fontName}.${extension}`
     },
     {
         command: '^B1',
@@ -302,7 +304,7 @@ module.exports = [
     {
         command: '^FO',
         alias: 'fieldOrigin',
-        parameters: 'x, y',
+        parameters: 'x, y, z',
         description: 'Field origin',
         fn: (x,y,z) => `^FO${x},${y},${z}`
         // 0 <= x <= 32000
@@ -446,8 +448,10 @@ module.exports = [
     },
     {
         command: '^IL',
+        alias: 'imageLoad',
         parameters: 'path',
-        description: 'Image load'
+        description: 'Image load',
+        fn: (path) => `^IL${path}^FS`
     },
     {
         command: '^IM',

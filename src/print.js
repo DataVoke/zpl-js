@@ -47,16 +47,18 @@ var defaultMedia = {
 var dots = (l) => utils.dots(l, defaultPrinter);
 
 var labels = {
-    "test": {
+    "basicNameBadge": {
         defaultContent: {
-            title: 'Hello world!',
-            properties: {
-                "date": moment().format(),
-                "owner": ""
-            },
-            url: 'example.com/labels/HelloWorld'
+            fullName: 'Eric Kachelmeyer',
+            region: 'Midwest',
+            // businessArea: 'Coactive',
+            // properties: {
+            //     "Region": "Coactive",   //moment().format(),
+            //     "Business Area": "Coactive"
+            // },
+            // url: 'example.com/labels/HelloWorld'
         },
-        template: qrWithProperties
+        template: basicNameBadgeTemplate
     }
 };
 
@@ -74,8 +76,7 @@ print();
 //     log.error('No label content provided');
 // }
 
-
-function print({printer = defaultPrinter, template = labels.test.template, content = labels.test.defaultContent, media = defaultMedia} = {}) {
+function print({printer = defaultPrinter, template = labels.basicNameBadge.template, content = labels.basicNameBadge.defaultContent, media = defaultMedia} = {}) {
 
     if (typeof template === "string" && template in labels)
         template = labels[template].template;
@@ -127,28 +128,57 @@ function basicTemplate() {
     return new Label()
         .fieldOrigin(dots(0.1),0, 0)
         .setFont('D','N',dots(0.120),dots(0.067))
-        .fieldData("Test Label")
+        .fieldData("Paul Weiss")
+
+        .fieldOrigin(dots(0.6),0, 0)
+        .setFont('D','N',dots(0.120),dots(0.067))
+        .fieldData("Paul Weiss")
         .end();
 }
 
-function qrWithProperties(label) {
+function basicNameBadgeTemplate(label) {
     return new Label()
         .labelHome(dots(0.1),dots(0.1))
-        // Title
-        .fieldOrigin(dots(0.1),0, 0)
-        .setFont('D','N',dots(0.120),dots(0.067))
-        .fieldData(label.title)
+
+        // Full Name
+        .fieldOrigin(dots(0.1),dots(0.35), 0)
+        .setFont('0', 'N', dots(0.3))
+        .fieldBlock(700, 8, 0, 'C')
+        .fieldData(label.fullName)
+
+        .fieldOrigin(dots(0.1),dots(0.85), 0)
+        .setFont('U')
+        .fieldBlock(700, 8, 0, 'C')
+        .fieldData(label.region)
+
+        //CAI Logo
+        .fieldOrigin(dots(0.1), dots(1.3), 0)
+        .imageLoad('E:CAI.GRF')
+        //.setFont('0', 'N', dots(0.4))
+        //.fieldBlock(700, 8, 0, 'C')
+        //.fieldData('CAI')
+
+
+        // .setFont('D','N',dots(0.220),dots(0.167))
+        // .setFontByName('N', dots(0.220), dots(0.167), 'Ravie', 'ttf')
+        //.setFont('B','N',dots(0.220),dots(0.167))
+
+        // .setFontByName('N', dots(0.120), dots(0.067), 'Ravie', 'ttf')
+
+
         // QR Code
-        .fieldOrigin(0,dots(0.15))
-        .qr({text: label.url})
+        // .fieldOrigin(0,dots(0.15))
+        // .qr({text: label.url})
+
         // Properties
-        .fieldOrigin(dots(0.6),dots(0.15))
-        .setFont('D','N',dots(0.07),dots(0.035))
-        .fieldBlock(dots(1.6),8)
-        .fieldData(Object.keys(label.properties).map((key) => key + ": " + label.properties[key]).join('\\&'))
+        // .fieldOrigin(dots(0.6),dots(0.15))
+        // .setFont('D','N',dots(0.07),dots(0.035))
+        // .fieldBlock(dots(1.6),8)
+        // .fieldData(Object.keys(label.properties).map((key) => key + ": " + label.properties[key]).join('\\&'))
+
         // URI
-        .fieldOrigin(dots(0.1),dots(0.85))
-        .setFont('0','N',22,18)
-        .fieldData(label.url)
+        // .fieldOrigin(dots(0.1),dots(0.85))
+        // .setFont('0','N',22,18)
+        // .fieldData(label.url)
         .end()
 }
