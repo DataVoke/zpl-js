@@ -62,7 +62,20 @@ var labels = {
     }
 };
 
-print();
+
+const websocketLib = require('ws');
+let socketServer = new websocketLib.Server({ port: 1234 });
+socketServer.on('connection', (socketConn) => {
+    socketConn.on('message', (data, flags) => {
+        try {
+            let content = JSON.parse(data);
+            print({printer: defaultPrinter, template: basicNameBadgeTemplate, content: content, media: defaultMedia});
+        }
+        catch (e) {
+            socketConn.send(`Error Printing: ${e.message}`);
+        }
+    });
+});
 
 // if (program.test) {
 //     log.info('Printing a test label...');

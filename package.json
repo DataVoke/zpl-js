@@ -6,7 +6,8 @@
     "gulp-babel": "^5.1.0",
     "loglevel": "^1.4.0",
     "moment": "^2.10.6",
-    "telnet-client": "^0.1.0"
+    "telnet-client": "^0.1.0",
+    "ws": "^4.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.1.18",
