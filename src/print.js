@@ -152,7 +152,7 @@ function basicNameBadgeTemplate(label) {
         .fieldData(label.region)
 
         //CAI Logo
-        .fieldOrigin(dots(0.1), dots(1.3), 0)
+        .fieldOrigin(dots(0.55), dots(1.3), 0)
         .imageLoad('E:CAI.GRF')
         //.setFont('0', 'N', dots(0.4))
         //.fieldBlock(700, 8, 0, 'C')
