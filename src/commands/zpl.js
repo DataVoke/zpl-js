@@ -338,8 +338,12 @@ module.exports = [
     },
     {
         command: '^FW',
+        alias: 'fieldOrientation',
         parameters: 'orientation',
-        description: 'Field orientation'
+        description: 'Field orientation',
+        fn: (r, z) => `^FW${r},${z}`,
+        // r in ['N', 'R', 'I', 'B']    // rotate field (Normal, Rotated 90, Rotated 180, Bottom-up 270)
+        // z in [0, 1, 2]               // justification (Left, Right, Auto)
     },
     {
         command: '^FX',

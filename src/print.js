@@ -31,7 +31,7 @@ log.setLevel(program.verbose);
 var defaultPrinterModel = PRINTERS.ZEBRA_GX430T;
 var defaultPrinter = Object.assign({
     name: 'Default Printer',
-    address: '10.10.11.23'
+    address: '192.168.8.105'
 }, defaultPrinterModel, program.json && program.json.printer);
 var defaultMedia = {
     width: 2 * 25.4,
@@ -47,24 +47,32 @@ var defaultMedia = {
 var dots = (l) => utils.dots(l, defaultPrinter);
 
 var labels = {
-    "basicNameBadge": {
-        defaultContent: {
-            fullName: 'Eric Kachelmeyer',
-            region: 'Midwest',
-            // businessArea: 'Coactive',
-            // properties: {
-            //     "Region": "Coactive",   //moment().format(),
-            //     "Business Area": "Coactive"
-            // },
-            // url: 'example.com/labels/HelloWorld'
-        },
-        template: basicNameBadgeTemplate
-    }
+  basicNameBadge: {
+    defaultContent: {
+      firstName: "Heriberto (Eddie)",
+      lastName: "Schleppenbach",
+      region: "Midwest",
+      team: "57"
+    },
+    template: basicNameBadgeTemplate
+  }
 };
 
+/* Use this block for secure websocket
+const path = require("path");
+const fs = require("fs");
+const https = require("https");
+const certOptions = {
+  key: fs.readFileSync(path.resolve("./server.key")),
+  cert: fs.readFileSync(path.resolve("./server.crt"))
+};
+const server = { server: https.createServer(certOptions).listen(8443) };
+*/ 
+
+const server = { port: 1234 };
 
 const websocketLib = require('ws');
-let socketServer = new websocketLib.Server({ port: 1234 });
+let socketServer = new websocketLib.Server(server);
 socketServer.on('connection', (socketConn) => {
     socketConn.on('message', (data, flags) => {
         try {
@@ -77,17 +85,17 @@ socketServer.on('connection', (socketConn) => {
     });
 });
 
-// if (program.test) {
-//     log.info('Printing a test label...');
-//     print();
-// } else if (program.json) {
-//     log.trace('Using provided JSON printing parameters');
-//     log.trace(`Provided parameters: ${JSON.stringify(program.json)}`);
-//
-//     print(JSON.parse(program.json));
-// } else {
-//     log.error('No label content provided');
-// }
+if (program.test) {
+    log.info('Printing a test label...');
+    print();
+} else if (program.json) {
+    log.trace('Using provided JSON printing parameters');
+    log.trace(`Provided parameters: ${JSON.stringify(program.json)}`);
+
+    print(JSON.parse(program.json));
+} else {
+    log.info('Print server listening.');
+}
 
 function print({printer = defaultPrinter, template = labels.basicNameBadge.template, content = labels.basicNameBadge.defaultContent, media = defaultMedia} = {}) {
 
@@ -137,47 +145,45 @@ function invalidParameterError(name, arg) {
     log.error("Invalid value for for parameter '" + name + "'");
 }
 
-function basicTemplate() {
-    return new Label()
-        .fieldOrigin(dots(0.1),0, 0)
-        .setFont('D','N',dots(0.120),dots(0.067))
-        .fieldData("Paul Weiss")
-
-        .fieldOrigin(dots(0.6),0, 0)
-        .setFont('D','N',dots(0.120),dots(0.067))
-        .fieldData("Paul Weiss")
-        .end();
-}
-
 function basicNameBadgeTemplate(label) {
-    return new Label()
-        .labelHome(dots(0.1),dots(0.1))
+    return (
+      new Label()
+        .labelHome(dots(0.1), dots(0.1))
 
         // Full Name
-        .fieldOrigin(dots(0.1),dots(0.35), 0)
-        .setFont('0', 'N', dots(0.3))
-        .fieldBlock(700, 8, 0, 'C')
-        .fieldData(label.fullName)
+        .fieldOrigin(dots(0.4), dots(0.2), 0)
+        .setFont("0", "R", dots(0.2))
+        .fieldBlock(500, 8, 0, "L")
+        .fieldData(label.firstName)
+        .fieldOrigin(dots(0.2), dots(0.2), 0)
+        .setFont("0", "R", dots(0.2))
+        .fieldBlock(500, 8, 0, "L")
+        .fieldData(label.lastName)
 
-        .fieldOrigin(dots(0.1),dots(0.85), 0)
-        .setFont('U')
-        .fieldBlock(700, 8, 0, 'C')
+        // Region
+        .fieldOrigin(dots(0.15), dots(0.2), 0)
+        .setFont("U", "R")
+        .fieldBlock(500, 8, 0, "L")
         .fieldData(label.region)
 
+        // Team
+        .fieldOrigin(dots(0.01), dots(0.2), 0)
+        .setFont("U", "R")
+        .fieldBlock(500, 3, 0, "L")
+        .fieldData(label.team || "")
+
         //CAI Logo
-        .fieldOrigin(dots(0.55), dots(1.3), 0)
-        .imageLoad('E:CAI.GRF')
+        .fieldOrigin(dots(0.2), dots(1.3), 0)
+        .imageLoad("E:CAI.GRF")
         //.setFont('0', 'N', dots(0.4))
         //.fieldBlock(700, 8, 0, 'C')
         //.fieldData('CAI')
-
 
         // .setFont('D','N',dots(0.220),dots(0.167))
         // .setFontByName('N', dots(0.220), dots(0.167), 'Ravie', 'ttf')
         //.setFont('B','N',dots(0.220),dots(0.167))
 
         // .setFontByName('N', dots(0.120), dots(0.067), 'Ravie', 'ttf')
-
 
         // QR Code
         // .fieldOrigin(0,dots(0.15))
@@ -194,4 +200,5 @@ function basicNameBadgeTemplate(label) {
         // .setFont('0','N',22,18)
         // .fieldData(label.url)
         .end()
+    );
 }
